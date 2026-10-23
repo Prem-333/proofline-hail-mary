@@ -5,6 +5,14 @@ export async function semanticMatches(content: string, sources: Source[], status
     status('Loading the local language model. The first download may take a minute.');
     const { pipeline, env } = await import('@huggingface/transformers');
     env.allowLocalModels = false;
+    // Keep the matching ORT runtime on its versioned CDN. The hosting platform
+    // caps individual assets at 25 MiB; this runtime is larger than that limit.
+    const ortBase = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.31.0-dev.20260914-8d85527a0/dist/';
+    if (!env.backends.onnx.wasm) throw new Error('The local inference runtime is unavailable.');
+    env.backends.onnx.wasm.wasmPaths = {
+        mjs: ortBase + 'ort-wasm-simd-threaded.asyncify.mjs',
+        wasm: ortBase + 'ort-wasm-simd-threaded.asyncify.wasm',
+    };
     if (!embedder)
         embedder = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2', { dtype: 'q8', device: 'wasm' });
     const lines = sentences(content).slice(0, 40).filter(s => s.length <= 2000);
