@@ -94,13 +94,20 @@ export default function Proofline() {
     const runReview = () => task('Checking the saved draft…', async () => { let d = draft!; if (dirty) {
         const n = await command({ action: 'draft.save', draftId: d.id, draft: edit });
         d = n.state.drafts.find(x => x.id === d.id)!;
-    } let semantic: any[] = []; if (ai)
+    } let semantic: any[] = []; if (ai) {
+        let active = true;
+        let timeout: ReturnType<typeof setTimeout> | undefined;
         try {
-            semantic = await semanticMatches([d.content, d.attachment?.extractedText].filter(Boolean).join('\n'), spaceRef.current!.state.sources, setBusy);
+            semantic = await Promise.race([
+                semanticMatches([d.content, d.attachment?.extractedText].filter(Boolean).join('\n'), spaceRef.current!.state.sources, message => { if (active) setBusy(message); }),
+                new Promise<never>((_, reject) => { timeout = setTimeout(() => reject(new Error('Model deadline exceeded')), 45000); }),
+            ]);
         }
         catch {
-            setNotice('The local AI model could not load. This review uses lexical retrieval and explicit rules.');
-        } setBusy('Checking evidence and brand rules…'); await command({ action: 'draft.analyse', draftId: d.id, semantic }); });
+            setNotice('Local AI was unavailable or took too long. This review uses lexical retrieval and explicit rules. You can retry AI after the model download completes.');
+        }
+        finally { active = false; clearTimeout(timeout); }
+    } setBusy('Checking evidence and brand rules…'); await command({ action: 'draft.analyse', draftId: d.id, semantic }); });
     const upload = async (file?: File) => { if (!file || !edit)
         return; await task('Preparing file…', async () => { const extracted = await extract(file, setBusy); setBusy('Saving the original file…'); const form = new FormData(); form.append('file', file); const r = await fetch('/api/files?workspace=' + space!.id, { method: 'POST', headers: { 'x-demo-role': role }, body: form }); const stored: any = await r.json(); if (!r.ok)
         throw new Error(stored.error); setEdit((e: any) => ({ ...e, attachment: { ...stored, ...extracted, name: file.name, size: file.size } })); setNotice('Compare the extracted text with the original, then confirm and save.'); }); };

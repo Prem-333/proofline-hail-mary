@@ -2,6 +2,8 @@
 
 **Evidence before approval.** A working brand-review desk by **Hail Mary**, built for Round 2 of the We Code Coders hackathon against the Inkloom AI brief.
 
+[Open the working project](https://proofline-hail-mary.dainty-shark-5340.chatgpt.site) · [Round 2 project PDF](docs/Proofline-Round-2.pdf) · [Release verification](docs/RELEASE.md)
+
 ## Judge walkthrough
 
 1. Open the project and choose **Try the sample workspace**. No account or API key is required.

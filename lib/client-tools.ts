@@ -1,6 +1,7 @@
 import type { Attachment, SemanticMatch, Source } from './types';
 import { sentences } from './analysis';
 let embedder: any;
+let embedderLoading: Promise<any> | undefined;
 export async function semanticMatches(content: string, sources: Source[], status: (s: string) => void): Promise<SemanticMatch[]> {
     status('Loading the local language model. The first download may take a minute.');
     const { pipeline, env } = await import('@huggingface/transformers');
@@ -13,8 +14,11 @@ export async function semanticMatches(content: string, sources: Source[], status
         mjs: ortBase + 'ort-wasm-simd-threaded.asyncify.mjs',
         wasm: ortBase + 'ort-wasm-simd-threaded.asyncify.wasm',
     };
-    if (!embedder)
-        embedder = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2', { dtype: 'q8', device: 'wasm' });
+    if (!embedder) {
+        embedderLoading ??= pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2', { dtype: 'q8', device: 'wasm' });
+        try { embedder = await embedderLoading; }
+        finally { embedderLoading = undefined; }
+    }
     const lines = sentences(content).slice(0, 40).filter(s => s.length <= 2000);
     if (!lines.length || !sources.length)
         return [];
