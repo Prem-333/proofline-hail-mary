@@ -1,0 +1,21 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+const base=process.env.PROOFLINE_TEST_URL||'http://127.0.0.1:5173';
+async function req(path,body,cookie='',role='creator',extra={}){const r=await fetch(base+path,{method:body?'POST':'GET',headers:{...(body?{'Content-Type':'application/json',Origin:base}:{}),Cookie:cookie,'x-demo-role':role,...extra},...(body?{body:JSON.stringify(body)}:{})});const text=await r.text();let json;try{json=JSON.parse(text)}catch{json={error:text}};return {status:r.status,json,cookie:r.headers.get('set-cookie')?.split(';')[0]||''}}
+let cookie,id,state,draftId;
+const input={title:'HTTP journey',content:'Our internal study measured 18% less reporting time on selected tasks. Start your 14-day trial.',channel:'Website',intent:'Explain reporting.',product:'Luma Analytics',market:'Global',altText:'',foreground:'#152c37',background:'#ffffff'};
+async function cmd(command,role='creator',revision=state.revision){const r=await req('/api/workspace',{workspaceId:id,revision,command},cookie,role);if(r.status===200)state=r.json;return r}
+test('HTTP journey and access boundaries',async t=>{
+ await t.test('isolated sample creation persists in D1',async()=>{const r=await req('/api/workspace',{action:'demo.start'});assert.equal(r.status,201);cookie=r.cookie;id=r.json.id;const s=await req('/api/workspace?id='+id,null,cookie);assert.equal(s.status,200);state=s.json;assert.equal(state.mode,'demo')});
+ await t.test('unknown session cannot read another workspace',async()=>{assert.equal((await req('/api/workspace?id='+id)).status,404)});
+ await t.test('cross-origin mutation rejected',async()=>{const r=await req('/api/workspace',{action:'demo.start'},'',undefined,{Origin:'https://invalid.example'});assert.equal(r.status,403)});
+ await t.test('create draft and server-side analysis',async()=>{let r=await cmd({action:'draft.create',draft:input});assert.equal(r.status,200);draftId=r.json.draftId;r=await cmd({action:'draft.analyse',draftId});assert.equal(r.status,200);assert.equal(r.json.state.drafts[0].review.findings.length,0)});
+ await t.test('stale writes rejected instead of overwriting',async()=>{assert.equal((await cmd({action:'draft.save',draftId,draft:input},'creator',0)).status,409)});
+ await t.test('creator cannot approve through direct API',async()=>{assert.equal((await cmd({action:'draft.approve',draftId,note:'Bypass'},'creator')).status,403)});
+ await t.test('independent approval and export work',async()=>{assert.equal((await cmd({action:'draft.submit',draftId})).status,200);assert.equal((await cmd({action:'draft.approve',draftId,note:'Source and scope inspected'},'reviewer')).status,200);const r=await req('/api/export',{workspaceId:id,revision:state.revision,draftId},cookie,'reviewer');assert.equal(r.status,200);assert.ok(r.json.receipt.approval.contentHash);state.revision=r.json.revision});
+ await t.test('revised draft blocks old export',async()=>{assert.equal((await cmd({action:'draft.save',draftId,draft:{...input,content:input.content+' Revised.'}})).status,200);const r=await req('/api/export',{workspaceId:id,revision:state.revision,draftId},cookie);assert.equal(r.status,409)});
+ await t.test('reviewer cannot change brand policy',async()=>{assert.equal((await cmd({action:'brand.save',brand:state.state.brand},'reviewer')).status,403)});
+ await t.test('fake upload content rejected by server',async()=>{const form=new FormData();form.append('file',new Blob(['not a PDF'],{type:'application/pdf'}),'fake.pdf');const r=await fetch(base+'/api/files?workspace='+id,{method:'POST',headers:{Origin:base,Cookie:cookie},body:form});assert.equal(r.status,400)});
+ await t.test('upload, retrieve and isolate original file',async()=>{const bytes=Uint8Array.from([137,80,78,71,13,10,26,10,0]);const form=new FormData();form.append('file',new Blob([bytes],{type:'image/png'}),'boundary-test.png');const r=await fetch(base+'/api/files?workspace='+id,{method:'POST',headers:{Origin:base,Cookie:cookie},body:form});assert.equal(r.status,201);const f=await r.json();const get=await fetch(base+'/api/files?key='+encodeURIComponent(f.key),{headers:{Cookie:cookie}});assert.equal(get.status,200);assert.equal((await get.arrayBuffer()).byteLength,9);assert.equal((await fetch(base+'/api/files?key='+encodeURIComponent(f.key))).status,404)});
+});
+
