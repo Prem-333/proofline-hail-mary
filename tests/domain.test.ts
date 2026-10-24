@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { analyse, contrast } from '../lib/analysis.ts';
 import { execute, reviewCurrent, approvalCurrent, contentHash } from '../lib/domain.ts';
 import { seedWorkspace, sampleDraft } from '../lib/seed.ts';
+import { previewSourceChange } from '../lib/source-impact.ts';
 const creator = { id: 'c', name: 'Creator', role: 'creator' as const }, reviewer = { id: 'r', name: 'Reviewer', role: 'reviewer' as const }, admin = { id: 'a', name: 'Owner', role: 'admin' as const };
 async function setup(content = sampleDraft.content) { const w = seedWorkspace(); await execute(w, creator, { action: 'draft.create', draft: { ...sampleDraft, content } }); return { w, d: w.drafts[0] }; }
 async function ready() { const x = await setup('Our internal study measured 18% less reporting time on selected tasks. Start your 14-day trial.'); await execute(x.w, creator, { action: 'draft.analyse', draftId: x.d.id }); await execute(x.w, creator, { action: 'draft.submit', draftId: x.d.id }); return x; }
@@ -30,3 +31,47 @@ test('image review requires confirmed extraction and description', async () => {
 test('selected colour pair follows WCAG contrast formula', () => { assert.equal(contrast('#000000', '#ffffff'), 21); assert.equal(contrast('#ffffff', '#ffffff'), 1); });
 test('removing an attachment actually removes it', async () => { const { w, d } = await setup(); d.attachment = { key: 'x', name: 'f.pdf', type: 'pdf', size: 10, hash: 'a'.repeat(64), extractedText: '', extractionConfirmed: false }; await execute(w, creator, { action: 'draft.save', draftId: d.id, draft: sampleDraft }); assert.equal(d.attachment, undefined); });
 test('change request revokes approval and records feedback', async () => { const { w, d } = await ready(); await execute(w, reviewer, { action: 'draft.approve', draftId: d.id, note: '' }); await execute(w, reviewer, { action: 'draft.changes', draftId: d.id, body: 'Add context for the study.' }); assert.equal(await approvalCurrent(d, w), false); assert.equal(d.submitted, false); assert.equal(d.comments[0].kind, 'changes'); });
+test('source preview predicts a new blocker without changing saved data', async () => {
+    const { w, d } = await ready();
+    await execute(w, reviewer, { action: 'draft.approve', draftId: d.id, note: 'Checked' });
+    const saved = JSON.stringify(w);
+    const revised = { ...w.sources[0], excerpt: w.sources[0].excerpt.replace('18%', '12%'), approvedWording: w.sources[0].approvedWording.replace('18%', '12%') };
+    const preview = previewSourceChange(w, revised);
+    assert.equal(JSON.stringify(w), saved);
+    assert.equal(preview.draftsWithNewBlockers, 1);
+    assert.equal(preview.reviewsToRefresh, 1);
+    assert.equal(preview.drafts[0].beforeBlockers, 0);
+    const committed = structuredClone(w);
+    await execute(committed, admin, { action: 'source.save', source: revised });
+    await execute(committed, creator, { action: 'draft.analyse', draftId: d.id });
+    assert.equal(preview.drafts[0].afterBlockers, committed.drafts[0].review!.findings.filter(f => f.severity === 'blocker').length);
+});
+test('source preview identifies a resolved finding', async () => {
+    const { w } = await ready();
+    const corrected = structuredClone(w.sources[0]);
+    w.sources[0].excerpt = w.sources[0].excerpt.replace('18%', '12%');
+    w.sources[0].approvedWording = w.sources[0].approvedWording.replace('18%', '12%');
+    const preview = previewSourceChange(w, corrected);
+    assert.equal(preview.drafts[0].resolved.filter(f => f.severity === 'blocker').length, 1);
+    assert.equal(preview.drafts[0].afterBlockers, 0);
+});
+test('expiry preview adds a blocker for a previously supported claim', async () => {
+    const { w } = await ready();
+    const preview = previewSourceChange(w, { ...w.sources[0], expiresAt: '2020-01-01' });
+    assert.equal(preview.draftsWithNewBlockers, 1);
+    assert.ok(preview.drafts[0].added.some(f => /expired|current/i.test(f.explanation + f.title)));
+});
+test('unrelated source changes keep findings but still require review refresh', async () => {
+    const { w } = await ready();
+    const unrelated = { ...w.sources[2], product: 'Other product' };
+    const preview = previewSourceChange(w, unrelated);
+    assert.equal(preview.changedDrafts, 0);
+    assert.equal(preview.reviewsToRefresh, 1);
+});
+test('source preview checks extracted attachment claims and rejects missing sources', async () => {
+    const { w, d } = await setup('Reporting overview.');
+    d.attachment = { key: 'x', name: 'study.pdf', type: 'pdf', size: 10, hash: 'a'.repeat(64), extractedText: 'Our internal study measured 18% less reporting time on selected tasks.', extractionConfirmed: true };
+    const revised = { ...w.sources[0], excerpt: w.sources[0].excerpt.replace('18%', '12%'), approvedWording: w.sources[0].approvedWording.replace('18%', '12%') };
+    assert.equal(previewSourceChange(w, revised).draftsWithNewBlockers, 1);
+    assert.throws(() => previewSourceChange(w, { ...revised, id: 'absent' }), /existing source/);
+});

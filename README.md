@@ -13,6 +13,8 @@
 5. Export the receipt. Return to Creator, revise and save the content: the previous approval becomes outdated and export is blocked.
 6. Explore the evidence library, brand rules, discussion and activity record. Use Brand owner · Jordan to edit a policy or evidence source and see existing reviews become outdated.
 
+7. Switch to Brand owner · Jordan, open the reporting study and change 18% to 12% in both source fields. Choose **Preview draft impact** to see a new blocker without saving. Editing again marks the preview outdated.
+
 Demo roles are explicitly simulated for evaluation. Signed-in private workspaces use server-enforced membership; a different member must approve a creator's draft.
 
 ## Run locally

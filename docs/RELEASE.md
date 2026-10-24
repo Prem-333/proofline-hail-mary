@@ -1,11 +1,11 @@
 # Round 2 release verification
 
-Verified 23 October 2026.
+Updated 24 October 2026.
 
 - Public project: https://proofline-hail-mary.dainty-shark-5340.chatgpt.site
 - Public source: https://github.com/Prem-333/proofline-hail-mary
-- 24 domain scenarios passed.
-- 11 HTTP scenarios passed against the public deployment, covering creation, persistence, independent approval, export, invalidation, session isolation, role enforcement, concurrent edits and file storage. The test runner also counts a parent test; it is not an extra scenario.
+- 29 domain scenarios passed, including five source-change preview cases.
+- 11 HTTP scenarios passed on 23 October against the public deployment, covering creation, persistence, independent approval, export, invalidation, session isolation, role enforcement, concurrent edits and file storage. The test runner also counts a parent test; it is not an extra scenario.
 - TypeScript checking and the production build passed.
 - Local browser verification covered MiniLM retrieval, PDF extraction, image OCR, corrections, independent approval and the downloaded receipt.
 - Public links were accessed without an authentication header. The sample requires no login.

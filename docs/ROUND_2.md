@@ -6,6 +6,7 @@ Proofline is Hail Mary's implementation of the Inkloom AI intelligent brand-gove
 
 - An isolated, account-free sample workspace with fictional Luma Analytics evidence and three clearly labelled demo personas.
 - Durable draft creation, editing, revision history, comments and change requests.
+- Source-change preview: compare new and resolved draft findings before saving a source revision, with a clear count of reviews that will become outdated. Preview does not change saved data or grant approval.
 - Versioned evidence with product, market, approved wording, approval state and validity date.
 - Editable brand vocabulary, avoided terms, palette and contrast threshold.
 - Claim retrieval and explicit checks for numerical disagreement, missing qualifications, broad promises, expired sources and conflicting source figures.
@@ -39,7 +40,7 @@ PDF.js extracts digital PDF text. Tesseract.js reads English image text. Transfo
 
 ## Three substantial Round 3 improvements
 
-1. **Evidence freshness and affected-content tracking.** Build a dependency index from claims to sources, scheduled expiry checks, an affected-drafts queue and targeted re-review notices. Acceptance: changing or expiring a source identifies every dependent approved draft; no unrelated draft is flagged by the dependency index. This extends today's on-demand invalidation.
+1. **Evidence freshness and affected-content tracking.** Build a dependency index from claims to sources, scheduled expiry checks, an affected-drafts queue and targeted re-review notices. Acceptance: changing or expiring a source identifies every dependent approved draft; no unrelated draft is flagged by the dependency index. This extends today's manual change preview and on-demand invalidation; targeted dependencies and scheduled checks are not implemented yet.
 2. **Visual evidence overlays.** Store OCR word boxes and confidence, show findings at the relevant image region, and route uncertain text through a correction queue. Acceptance: a reviewer can locate and correct each flagged phrase on the image; low-confidence areas cannot silently pass. This extends today's plain OCR text and manual colour selection.
 3. **Rule clarification from reviewer decisions.** Group repeated exceptions and change requests by policy rule, show representative evidence and let a brand owner draft, test and explicitly approve a policy revision. Acceptance: repeated exceptions create a traceable clarification item; no model or reviewer exception changes policy automatically. This extends today's individual comments and reasoned exceptions.
 
