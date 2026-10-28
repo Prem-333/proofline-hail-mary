@@ -16,6 +16,7 @@
 /out/
 next-env.d.ts
 *.tsbuildinfo
+/public/vendor/pdf.worker.min.mjs
 
 # Test output
 /coverage/

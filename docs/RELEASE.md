@@ -1,4 +1,17 @@
-# Round 2 release verification
+# Round 3 release verification
+
+Updated 28 October 2026 (IST).
+
+- 53 domain/security scenarios passed, covering the original approval flow and all three Round 3 improvements.
+- 19 HTTP scenarios passed against the local application; the test runner also counts two parent containers, which are not extra scenarios.
+- TypeScript checking passed.
+- Browser checks exercised actual Tesseract extraction, word-region correction, missing-text transcription, claim highlighting, policy trial results and explicit owner publication.
+- The hourly monitor is defined in `.github/workflows/evidence-monitor.yml`. Its actual executions and failures are visible in the repository's Actions tab; the application shows the last successful scheduled check for the workspace.
+- The monitor's signature, repository, workflow and expiry checks are covered by tests. A local test is not evidence of a completed hosted scheduler run.
+
+The three delivered improvements, judge walkthrough and implementation boundaries are documented in [ROUND_3.md](ROUND_3.md).
+
+## Earlier Round 2 verification
 
 Updated 24 October 2026.
 

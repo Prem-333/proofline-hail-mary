@@ -12,9 +12,9 @@
     "start": "node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js dev --config dist/server/wrangler.json --local --persist-to .wrangler/state --ip 127.0.0.1 --inspector-port 0",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "db:generate": "drizzle-kit generate",
-    "test": "node --experimental-strip-types --test tests/domain.test.ts",
+    "test": "node --experimental-strip-types --test tests/domain.test.ts tests/round3.test.ts",
     "typecheck": "tsc --noEmit",
-    "test:http": "node --test tests/http.test.mjs"
+    "test:http": "node --test tests/http.test.mjs tests/round3-http.test.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

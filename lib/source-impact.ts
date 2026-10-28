@@ -1,3 +1,4 @@
+import { evidenceState, dependenciesNow } from './freshness.ts';
 import { analyse } from './analysis.ts';
 import type { Finding, Source, Workspace } from './types';
 
@@ -23,7 +24,7 @@ export function previewSourceChange(workspace: Workspace, proposed: Source, now 
             beforeBlockers: before.findings.filter(f => f.severity === 'blocker').length,
             afterBlockers: after.findings.filter(f => f.severity === 'blocker').length,
             added, resolved, changed: !!(added.length || resolved.length),
-            needsReviewAfterSave: !!draft.review,
+            needsReviewAfterSave: !!draft.review && (!draft.review.dependencies || evidenceState(workspace, dependenciesNow(draft, workspace, now).map(x => x.sourceId), now) !== evidenceState({ ...workspace, sources }, dependenciesNow(draft, { ...workspace, sources }, now).map(x => x.sourceId), now)),
         };
     });
     return {

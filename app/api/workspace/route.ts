@@ -40,6 +40,7 @@ export async function POST(req: Request) {
         if (input.revision !== a.row.revision)
             throw new DomainError('This workspace changed. Refresh before applying your change.', 409);
         const command = commandSchema.parse(input.command);
+        if (command.action === 'demo.round3' && a.row.mode !== 'demo') throw new DomainError('Demonstration fixtures are available only in sample workspaces.', 403);
         if (command.action === 'draft.create' || command.action === 'draft.save')
             await checkAttachment(a.row.id, command.draft.attachment);
         const result = await execute(a.state, a.actor, command);

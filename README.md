@@ -1,8 +1,8 @@
 # Proofline
 
-**Evidence before approval.** A working brand-review desk by **Hail Mary**, built for Round 2 of the We Code Coders hackathon against the Inkloom AI brief.
+**Evidence before approval.** A working brand-review desk by **Hail Mary**, extended through Round 3 of the We Code Coders hackathon against the Inkloom AI brief.
 
-[Open the working project](https://proofline-hail-mary.dainty-shark-5340.chatgpt.site) · [Round 2 project PDF](docs/Proofline-Round-2.pdf) · [Release verification](docs/RELEASE.md)
+[Open the working project](https://proofline-hail-mary.dainty-shark-5340.chatgpt.site) · [Round 3 delivery](docs/ROUND_3.md) · [Release verification](docs/RELEASE.md)
 
 ## Judge walkthrough
 
@@ -11,11 +11,19 @@
 3. Apply all three corrections and choose **Save & review**.
 4. Request approval. Change the demo role to **Reviewer · Morgan**, inspect the evidence and approve.
 5. Export the receipt. Return to Creator, revise and save the content: the previous approval becomes outdated and export is blocked.
-6. Explore the evidence library, brand rules, discussion and activity record. Use Brand owner · Jordan to edit a policy or evidence source and see existing reviews become outdated.
+6. Explore the evidence library, brand rules, discussion and activity record. Use Brand owner · Jordan to edit a policy or evidence source. Policy changes require fresh reviews; evidence changes affect dependent drafts.
 
 7. Switch to Brand owner · Jordan, open the reporting study and change 18% to 12% in both source fields. Choose **Preview draft impact** to see a new blocker without saving. Editing again marks the preview outdated.
 
 Demo roles are explicitly simulated for evaluation. Signed-in private workspaces use server-enforced membership; a different member must approve a creator's draft.
+
+## Three delivered Round 3 improvements
+
+- **Evidence monitor:** claim-to-source dependencies, targeted affected-draft queue and authenticated hourly expiry scans.
+- **Image review:** word boxes, confidence, finding overlays, individual correction and missing-text transcription.
+- **Policy clarifications:** grouped reviewer decisions, separate proposals, before/after draft tests and explicit owner publication.
+
+Choose **Prepare Round 3 examples** in the sample workspace, then follow the [Round 3 walkthrough](docs/ROUND_3.md#judge-walkthrough). Examples are fictional and roles are simulated.
 
 ## Run locally
 

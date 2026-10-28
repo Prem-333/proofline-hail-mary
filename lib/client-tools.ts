@@ -1,4 +1,5 @@
-import type { Attachment, SemanticMatch, Source } from './types';
+import { wordsText } from './visual';
+import type { Attachment, SemanticMatch, Source, OCRWord } from './types';
 import { sentences } from './analysis';
 let embedder: any;
 let embedderLoading: Promise<any> | undefined;
@@ -62,8 +63,14 @@ export async function extract(file: File, status: (s: string) => void): Promise<
     const worker = await createWorker('eng', 1, { logger: m => { if (m.status === 'recognizing text')
             status(`Reading image text · ${Math.round(m.progress * 100)}%`); } });
     try {
-        const { data } = await worker.recognize(file);
-        return { type: 'image', width, height, ocrConfidence: data.confidence, extractedText: data.text.slice(0, 30000), extractionConfirmed: false };
+        const { data } = await worker.recognize(file, {}, { text: true, blocks: true });
+        const words: OCRWord[] = []; let line = 0;
+        for (const block of data.blocks || []) for (const paragraph of block.paragraphs) for (const row of paragraph.lines) {
+            for (const word of row.words) if (word.text.trim() && word.bbox.x1 > word.bbox.x0 && word.bbox.y1 > word.bbox.y0) words.push({ id: 'word-' + words.length, text: word.text.trim(), originalText: word.text.trim(), confidence: word.confidence, ...word.bbox, line, confirmed: false });
+            line++;
+        }
+        if (words.length > 800) throw new Error('Use an image with fewer than 800 recognised words so every region can be inspected.');
+        return { type: 'image', width, height, ocrConfidence: data.confidence, words, extractedText: words.length ? wordsText(words) : data.text.slice(0, 30000), extractionConfirmed: false };
     }
     finally {
         await worker.terminate();

@@ -22,6 +22,7 @@ export type Brand = {
 };
 export type Finding = {
     id: string;
+    ruleKey?: string;
     category: 'claim' | 'tone' | 'terminology' | 'visual' | 'accessibility' | 'extraction';
     severity: 'blocker' | 'advisory';
     title: string;
@@ -49,7 +50,15 @@ export type Attachment = {
     height?: number;
     ocrConfidence?: number;
     extractionConfirmed: boolean;
+    words?: OCRWord[];
+    supplementalText?: string;
 };
+export type OCRWord = { id: string; text: string; originalText: string; confidence: number; x0: number; y0: number; x1: number; y1: number; line: number; confirmed: boolean };
+export type SourceDependency = { sourceId: string; sourceVersion: number; quotes: string[]; currentAtReview: boolean };
+export type FreshnessItem = { draftId: string; title: string; approved: boolean; reasons: string[]; sourceIds: string[] };
+export type PolicyDecision = { id: string; ruleKey: string; ruleLabel: string; draftId: string; draftTitle: string; reviewId?: string; quote: string; reason: string; by: string; at: string; kind: 'exception' | 'changes' };
+export type PolicyTrial = { fingerprint: string; at: string; drafts: { id: string; title: string; before: number; after: number; added: string[]; resolved: string[] }[] };
+export type PolicyProposal = { id: string; ruleKey: string; decisionIds: string[]; rationale: string; brand: Brand; baseVersion: number; createdBy: string; createdAt: string; status: 'draft' | 'tested' | 'approved'; trial?: PolicyTrial; approvedBy?: string; approvedAt?: string; publishedVersion?: number };
 export type Review = {
     id: string;
     contentHash: string;
@@ -65,6 +74,8 @@ export type Review = {
     }[];
     engine: 'rules' | 'local-semantic';
     incomplete: boolean;
+    dependencies?: SourceDependency[];
+    semantic?: SemanticMatch[];
 };
 export type Approval = {
     by: string;
@@ -126,6 +137,9 @@ export type Workspace = {
     sources: Source[];
     drafts: Draft[];
     events: AuditEvent[];
+    decisions?: PolicyDecision[];
+    proposals?: PolicyProposal[];
+    monitor?: { lastScheduledAt?: string; checkedAt: string; trigger: 'manual' | 'scheduled' | 'source-change'; items: FreshnessItem[] };
 };
 export type Actor = {
     id: string;

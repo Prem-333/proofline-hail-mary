@@ -40,7 +40,7 @@ export function SourceImpact({ workspace, proposed }: { workspace: Workspace; pr
                     {d.resolved.map((f, i) => <div className="impact-finding resolved" key={'r'+i}><span>Resolved in preview</span><h4>{f.title}</h4><blockquote>{f.quote}</blockquote></div>)}
                     {!d.changed && <p>The explicit checks return the same findings for this draft.</p>}
                 </details>)}
-                <p className="impact-scope">Preview only: saved drafts, lexical evidence matching and explicit rules. No approval is granted. Saving any source revision currently makes all existing reviews outdated, including drafts with no finding changes.</p>
+                <p className="impact-scope">Preview only: saved drafts, lexical evidence matching and explicit rules. No approval is granted. Only reviews linked to changed evidence require refresh. Newly relevant sources are included. Unrelated approvals remain valid.</p>
             </>}
         </div>
     </section>;

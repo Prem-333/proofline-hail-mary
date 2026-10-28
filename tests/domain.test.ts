@@ -61,12 +61,12 @@ test('expiry preview adds a blocker for a previously supported claim', async () 
     assert.equal(preview.draftsWithNewBlockers, 1);
     assert.ok(preview.drafts[0].added.some(f => /expired|current/i.test(f.explanation + f.title)));
 });
-test('unrelated source changes keep findings but still require review refresh', async () => {
+test('unrelated source changes keep findings and do not require review refresh', async () => {
     const { w } = await ready();
     const unrelated = { ...w.sources[2], product: 'Other product' };
     const preview = previewSourceChange(w, unrelated);
     assert.equal(preview.changedDrafts, 0);
-    assert.equal(preview.reviewsToRefresh, 1);
+    assert.equal(preview.reviewsToRefresh, 0);
 });
 test('source preview checks extracted attachment claims and rejects missing sources', async () => {
     const { w, d } = await setup('Reporting overview.');
