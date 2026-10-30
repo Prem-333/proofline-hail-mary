@@ -2,7 +2,7 @@
 
 **Evidence before approval.** A working brand-review desk by **Hail Mary**, extended through Round 3 of the We Code Coders hackathon against the Inkloom AI brief.
 
-[Open the working project](https://proofline-hail-mary.dainty-shark-5340.chatgpt.site) · [Round 3 delivery](docs/ROUND_3.md) · [Release verification](docs/RELEASE.md)
+[Open the working project](https://proofline-hail-mary.mclaren720sfeelthesp.chatgpt.site) · [Round 3 delivery](docs/ROUND_3.md) · [Release verification](docs/RELEASE.md)
 
 ## Judge walkthrough
 

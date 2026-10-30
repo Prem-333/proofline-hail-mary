@@ -1,5 +1,5 @@
 const issuer = 'https://token.actions.githubusercontent.com';
-export const MONITOR_AUDIENCE = 'https://proofline-hail-mary.dainty-shark-5340.chatgpt.site';
+export const MONITOR_AUDIENCE = 'https://proofline-hail-mary.mclaren720sfeelthesp.chatgpt.site';
 const repository = 'Prem-333/proofline-hail-mary';
 const repositoryId = '1431184259';
 type SigningKey = JsonWebKey & { kid?: string };

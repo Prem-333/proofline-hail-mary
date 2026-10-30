@@ -1,4 +1,4 @@
-const site = 'https://proofline-hail-mary.dainty-shark-5340.chatgpt.site';
+const site = 'https://proofline-hail-mary.mclaren720sfeelthesp.chatgpt.site';
 const requestUrl = process.env.ACTIONS_ID_TOKEN_REQUEST_URL, requestToken = process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN;
 if (!requestUrl || !requestToken) throw new Error('Run this script through the authorised GitHub workflow.');
 const url = new URL(requestUrl); url.searchParams.set('audience', site);
