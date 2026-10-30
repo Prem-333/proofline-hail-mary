@@ -2,7 +2,7 @@
 
 Updated 30 October 2026 (IST).
 
-- 57 domain/security scenarios passed, covering the original approval flow and all three Round 3 improvements.
+- 59 domain/security scenarios passed, covering the original approval flow and all three Round 3 improvements.
 - 19 HTTP scenarios passed against both the local application and public Round 3 deployment; the test runner also counts two parent containers, which are not extra scenarios.
 - TypeScript checking and production packaging passed. [GitHub CI](https://github.com/Prem-333/proofline-hail-mary/actions/runs/41020057927) independently passed installation, all domain/security tests, type checking and the production build.
 - Browser checks exercised actual Tesseract extraction, word-region correction, missing-text transcription, claim highlighting, policy trial results and explicit owner publication.

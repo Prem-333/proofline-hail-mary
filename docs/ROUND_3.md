@@ -37,7 +37,7 @@ All sample evidence, approvals and feedback are explicitly fictional. Use a fres
 
 ## Verification and limits
 
-The test commands cover 57 domain/security scenarios and 19 HTTP scenarios, excluding the two parent HTTP test containers. The checks include independent approval, targeted invalidation, OCR gates, stale proposal tests, role enforcement and scheduler identity rejection. Execution results are recorded in the release notes; these are not model-accuracy or user-study measurements.
+The test commands cover 59 domain/security scenarios and 19 HTTP scenarios, excluding the two parent HTTP test containers. The checks include independent approval, targeted invalidation, OCR gates, stale proposal tests, role enforcement and scheduler identity rejection. Execution results are recorded in the release notes; these are not model-accuracy or user-study measurements.
 
 The existing limitations remain: optional semantic model downloads may fail and fall back to lexical rules; scanned PDFs need manual transcription; general factual claims and full layout/logo compliance are not covered; private invitation acceptance has not been tested with a second real account; receipts are not digitally signed. Team contribution sign-off remains the participants' responsibility.
 
