@@ -75,3 +75,16 @@ test('source preview checks extracted attachment claims and rejects missing sour
     assert.equal(previewSourceChange(w, revised).draftsWithNewBlockers, 1);
     assert.throws(() => previewSourceChange(w, { ...revised, id: 'absent' }), /existing source/);
 });
+
+test('source.save rejects a source with missing required fields', async () => {
+    const { w } = await setup();
+    const base = { ...w.sources[0] };
+    for (const field of ['title', 'excerpt', 'approvedWording', 'status', 'product', 'market']) {
+        await assert.rejects(() => execute(w, admin, { action: 'source.save', source: { ...base, [field]: '' } }), /required/i);
+        await assert.rejects(() => execute(w, admin, { action: 'source.save', source: { ...base, [field]: '   ' } }), /required/i);
+    }
+});
+test('source.save rejects an invalid status value', async () => {
+    const { w } = await setup();
+    await assert.rejects(() => execute(w, admin, { action: 'source.save', source: { ...w.sources[0], status: 'published' } }), /status/i);
+});

@@ -81,6 +81,11 @@ export async function execute(w: Workspace, actor: Actor, command: any): Promise
     if (command.action === 'source.save') {
         requireRole(actor, ['admin']);
         const input = command.source;
+        for (const field of ['title', 'excerpt', 'approvedWording', 'status', 'product', 'market'] as const)
+            if (!input[field] || typeof input[field] !== 'string' || !input[field].trim())
+                throw new DomainError(`Source ${field} is required.`);
+        if (!['draft', 'approved'].includes(input.status))
+            throw new DomainError('Source status must be "draft" or "approved".');
         const old = w.sources.find(s => s.id === input.id);
         const s: Source = { ...input, id: old?.id || crypto.randomUUID(), owner: actor.name, version: (old?.version || 0) + 1 };
         if (old)
