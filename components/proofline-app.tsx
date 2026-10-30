@@ -38,6 +38,7 @@ export default function Proofline() {
         reason: string;
     } | null>(null), [query, setQuery] = useState(''), [members, setMembers] = useState<any[]>([]), [invite, setInvite] = useState(''), [inviteRole, setInviteRole] = useState('reviewer');
     const [changeRule, setChangeRule] = useState('');
+    useEffect(() => { window.scrollTo(0, 0); }, [view]);
     const spaceRef = useRef(space);
     spaceRef.current = space;
     // Async fingerprints belong to one workspace snapshot. Never render an
