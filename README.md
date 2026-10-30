@@ -6,8 +6,8 @@
 
 ## Judge walkthrough
 
-1. Open the project and choose **Try the sample workspace**. No account or API key is required.
-2. Run a review of the sample draft. Inspect the 30% claim against the source's qualified 18% result.
+1. Open the project and choose **Try the sample workspace**. The **Judge walkthrough** introduces three observable demonstrations: change one fact, locate one image phrase, and test one rule. No account or API key is required.
+2. Open **Review desk** and run a review of the sample draft. Inspect the 30% claim against the source's qualified 18% result.
 3. Apply all three corrections and choose **Save & review**.
 4. Request approval. Change the demo role to **Reviewer · Morgan**, inspect the evidence and approve.
 5. Export the receipt. Return to Creator, revise and save the content: the previous approval becomes outdated and export is blocked.

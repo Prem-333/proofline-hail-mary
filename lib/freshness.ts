@@ -1,4 +1,4 @@
-import { analyse, sourceCurrent } from './analysis.ts';
+import { analyse, sourceCurrent, REVIEW_RULESET_VERSION } from './analysis.ts';
 import type { Draft, Workspace, FreshnessItem } from './types';
 
 export function dependenciesNow(d: Draft, w: Workspace, now = Date.now()) {
@@ -10,6 +10,7 @@ export function evidenceState(w: Workspace, ids?: string[], now = Date.now()) {
 export function evidenceIssues(d: Draft, w: Workspace, now = Date.now()) {
     if (!d.review) return [];
     if (!d.review.dependencies) return ['Run a new review to record source dependencies.'];
+    if (d.review.rulesetVersion !== REVIEW_RULESET_VERSION) return ['Review checks have been updated. Run a fresh review before release.'];
     const reasons: string[] = [];
     for (const dep of d.review.dependencies) {
         const s = w.sources.find(s => s.id === dep.sourceId);

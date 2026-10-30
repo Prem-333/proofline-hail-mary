@@ -60,6 +60,7 @@ export type PolicyDecision = { id: string; ruleKey: string; ruleLabel: string; d
 export type PolicyTrial = { fingerprint: string; at: string; drafts: { id: string; title: string; before: number; after: number; added: string[]; resolved: string[] }[] };
 export type PolicyProposal = { id: string; ruleKey: string; decisionIds: string[]; rationale: string; brand: Brand; baseVersion: number; createdBy: string; createdAt: string; status: 'draft' | 'tested' | 'approved'; trial?: PolicyTrial; approvedBy?: string; approvedAt?: string; publishedVersion?: number };
 export type Review = {
+    rulesetVersion?: string;
     id: string;
     contentHash: string;
     policyVersion: number;

@@ -1,7 +1,7 @@
 import { sampleDraft } from './seed.ts';
 import { dependenciesNow, evidenceState, scanFreshness } from './freshness.ts';
 import { decisionGroups, ruleOptions, testPolicy } from './policy.ts';
-import { analyse, sourceCurrent } from './analysis.ts';
+import { analyse, sourceCurrent, REVIEW_RULESET_VERSION } from './analysis.ts';
 import type { Actor, Draft, SemanticMatch, Source, Workspace } from './types';
 export class DomainError extends Error {
     status: number;
@@ -16,8 +16,8 @@ export function sourceReferencesCurrent(d: Draft, w: Workspace, now = Date.now()
     const ids = [...(d.review?.evidence || []).map(e => e.sourceId), ...(d.review?.findings || []).flatMap(f => f.sourceId ? [f.sourceId] : [])];
     return ids.every(id => { const s = w.sources.find(x => x.id === id); return s && sourceCurrent(s, now); });
 }
-export async function reviewCurrent(d: Draft, w: Workspace, now = Date.now()) { return !!d.review?.dependencies && d.review.contentHash === await contentHash(d) && d.review.policyVersion === w.brand.version && d.review.sourceDigest === await sourceDigest(w, dependenciesNow(d, w, now).map(x => x.sourceId), now); }
-export async function policyFingerprint(w: Workspace) { return hash(JSON.stringify({ brand: w.brand, sources: evidenceState(w), drafts: await Promise.all(w.drafts.map(async d => [d.id, await contentHash(d), d.review?.id])) })); }
+export async function reviewCurrent(d: Draft, w: Workspace, now = Date.now()) { return d.review?.rulesetVersion === REVIEW_RULESET_VERSION && !!d.review?.dependencies && d.review.contentHash === await contentHash(d) && d.review.policyVersion === w.brand.version && d.review.sourceDigest === await sourceDigest(w, dependenciesNow(d, w, now).map(x => x.sourceId), now); }
+export async function policyFingerprint(w: Workspace) { return hash(JSON.stringify({ rulesetVersion: REVIEW_RULESET_VERSION, brand: w.brand, sources: evidenceState(w), drafts: await Promise.all(w.drafts.map(async d => [d.id, await contentHash(d), d.review?.id])) })); }
 export async function approvalCurrent(d: Draft, w: Workspace) { return !!d.approval && await reviewCurrent(d, w) && d.approval.reviewId === d.review?.id && d.approval.contentHash === d.review?.contentHash; }
 export function event(w: Workspace, actor: Actor, action: string, detail: string, draftId?: string) { w.events.unshift({ id: crypto.randomUUID(), at: new Date().toISOString(), actor: actor.name, action, detail, draftId }); w.events = w.events.slice(0, 500); }
 export function getDraft(w: Workspace, id: string) { const d = w.drafts.find(d => d.id === id); if (!d)

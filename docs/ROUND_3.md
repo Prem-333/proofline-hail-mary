@@ -28,7 +28,7 @@ Voice guidance remains reviewer context: only supported structured rules produce
 
 ## Judge walkthrough
 
-1. Open the sample workspace and choose **Prepare Round 3 examples**. Four fictional drafts and simulated review decisions are created through the normal domain operations.
+1. Open the sample workspace. The Judge walkthrough lists three demonstrations and their expected results. Choose **Prepare Round 3 examples**. Four fictional drafts and simulated review decisions are created through the normal domain operations.
 2. Change the demo role to **Brand owner · Jordan**. In Evidence library, change the reporting source from 18% to 12% in both fields and save. Evidence monitor flags the reporting draft; the trial-only approval remains current.
 3. In Review desk, choose a draft you can edit and select **Try image review with a sample**. Inspect word regions, correct a transcription, confirm uncertain regions, then confirm the whole transcription and review. Findings can be located on the image.
 4. Open Policy clarifications. Inspect the two historical-name decisions, draft a clarification, adjust the preferred-term rule, and test it. Inspect resolved findings before **Approve & publish policy**.
@@ -37,10 +37,14 @@ All sample evidence, approvals and feedback are explicitly fictional. Use a fres
 
 ## Verification and limits
 
-The test commands cover 53 domain/security scenarios and 19 HTTP scenarios, excluding the two parent HTTP test containers. The checks include independent approval, targeted invalidation, OCR gates, stale proposal tests, role enforcement and scheduler identity rejection. Execution results are recorded in the release notes; these are not model-accuracy or user-study measurements.
+The test commands cover 57 domain/security scenarios and 19 HTTP scenarios, excluding the two parent HTTP test containers. The checks include independent approval, targeted invalidation, OCR gates, stale proposal tests, role enforcement and scheduler identity rejection. Execution results are recorded in the release notes; these are not model-accuracy or user-study measurements.
 
 The existing limitations remain: optional semantic model downloads may fail and fall back to lexical rules; scanned PDFs need manual transcription; general factual claims and full layout/logo compliance are not covered; private invitation acceptance has not been tested with a second real account; receipts are not digitally signed. Team contribution sign-off remains the participants' responsibility.
 
 ## Reference
 
 Scheduler authentication follows [GitHub's OpenID Connect reference](https://docs.github.com/en/actions/reference/security/oidc). Third-party reuse and AI assistance remain disclosed in `THIRD_PARTY.md`.
+
+## Integrity refinement / 30 October
+
+The numeric conflict check now considers every relevant approved source, rather than only the top two candidates. A new review-ruleset version prevents approvals and policy trials made under earlier checks from being treated as current. Older workspaces retain their content and history, but require fresh review before release. Calendar dates and vocabulary keys are validated more strictly.

@@ -1,0 +1,24 @@
+'use client';
+import { ArrowRight, ArrowUpRight, Fingerprint, ScanText, GitBranch, ShieldCheck } from 'lucide-react';
+import type { Workspace } from '@/lib/types';
+
+export function JudgeWalkthrough({ workspace, demo, busy, prepare, open }: {
+    workspace: Workspace;
+    demo: boolean;
+    busy: boolean;
+    prepare: () => void;
+    open: (view: 'desk' | 'sources' | 'freshness' | 'clarifications') => void;
+}) {
+    const prepared = workspace.events.some(e => e.action === 'Round 3 sample prepared');
+    return <section className="judge-walkthrough">
+        <div className="judge-heading"><p className="eyebrow">HAIL MARY / INKLOOM AI / ROUND 03</p><h1>What happens <em>after</em> approval?</h1><p className="judge-intro">A fact changes. An image hides a claim. A reviewer finds the same ambiguity twice. Follow each change through Proofline.</p></div>
+        <div className="proof-chain" aria-label="Approval depends on three reviewed inputs"><span><Fingerprint size={21}/><b>The content</b><small>The version being released</small></span><ArrowRight aria-hidden="true"/><span><GitBranch size={21}/><b>The evidence</b><small>The sources behind its claims</small></span><ArrowRight aria-hidden="true"/><span><ShieldCheck size={21}/><b>The decision</b><small>A different reviewer signs off</small></span></div>
+        {demo && <div className="judge-setup"><div><strong>{prepared ? 'Your demonstration records are ready.' : 'Start with a controlled example.'}</strong><p>{prepared ? 'Four fictional drafts and two simulated reviewer decisions are saved. The steps below use those records.' : 'Prepare two independently approved sample drafts and two historical-name examples with reviewer feedback.'}</p></div><button className="primary" disabled={busy || prepared} onClick={prepare}>{prepared ? 'Examples prepared' : 'Prepare Round 3 examples'}</button></div>}
+        <div className="judge-cases">
+            <article><div className="case-number">01 <GitBranch size={22}/></div><div className="case-content"><p className="eyebrow">EVIDENCE FRESHNESS</p><h2>Change one fact.</h2><p>As <b>Brand owner · Jordan</b>, open the reporting source. Change <b>18% to 12%</b> in both the excerpt and approved wording, then save.</p><div className="case-result"><span>LOOK FOR</span><p>The reporting draft needs a new review. The unrelated <b>14-day trial</b> approval remains current. Open Evidence monitor to see why.</p></div><div className="button-row"><button className="secondary" onClick={() => open('sources')}>Open evidence library <ArrowRight size={15}/></button><button className="text-link" onClick={() => open('freshness')}>Inspect dependencies</button></div></div></article>
+            <article><div className="case-number">02 <ScanText size={22}/></div><div className="case-content"><p className="eyebrow">VISUAL EVIDENCE</p><h2>Find one phrase.</h2><p>Open an editable draft as <b>Creator · Alex</b>. Choose <b>Try image review with a sample</b>, inspect the word regions and correct the transcription before running a review.</p><div className="case-result"><span>LOOK FOR</span><p>Select <b>Locate on image</b> on a finding. The matching phrase is highlighted. Every uncertain region needs its own confirmation.</p></div><div className="button-row"><button className="secondary" onClick={() => open('desk')}>Open the review desk <ArrowRight size={15}/></button></div></div></article>
+            <article><div className="case-number">03 <ShieldCheck size={22}/></div><div className="case-content"><p className="eyebrow">POLICY CLARIFICATION</p><h2>Change one rule.</h2><p>As <b>Brand owner · Jordan</b>, inspect the two historical-name decisions. Draft a clarification, edit a structured rule, then test it against saved drafts.</p><div className="case-result"><span>LOOK FOR</span><p>Added and resolved findings appear before publication. The live policy changes only when the owner chooses <b>Approve &amp; publish policy</b>.</p></div><div className="button-row"><button className="secondary" onClick={() => open('clarifications')}>Inspect reviewer decisions <ArrowRight size={15}/></button></div></div></article>
+        </div>
+        <div className="judge-footnote"><div><h3>Verify the work.</h3><p>Sample records and personas are fictional. Test results measure implementation behaviour, not factual accuracy. Original images stay unchanged when OCR text is corrected.</p></div><div><a className="text-link" href="https://github.com/Prem-333/proofline-hail-mary" target="_blank" rel="noreferrer">Source repository <ArrowUpRight size={15}/></a><a className="text-link" href="https://github.com/Prem-333/proofline-hail-mary/actions/workflows/evidence-monitor.yml" target="_blank" rel="noreferrer">Scheduled check history <ArrowUpRight size={15}/></a></div></div>
+    </section>;
+}
